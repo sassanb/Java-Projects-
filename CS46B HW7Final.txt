@@ -1,0 +1,156 @@
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.ListIterator;
+
+/**
+ * GameBoard. This class encapsulates a board game with a single path around a
+ * rectangular board. The players are held in a HashMap called Players. The
+ * spaces on the board are held in a LinkedList called Spaces.
+ * 
+ */
+public class GameBoard
+{
+	// Players HashMap
+	// key = Player Name
+	// value = Player object
+	private HashMap<String, Player> Players;
+
+	private LinkedList<GameLocation> Spaces;
+
+	/**
+	 * Constructor. Initialize the two players and all the spaces in the
+	 * parallel arrays that are passed in as arguments.
+	 * 
+	 * @param Player1Name the name for the first Player
+	 * @param Player2Name the name for the second Player
+	 * @param SpaceNames the Names for all the spaces on the board
+	 * @param ScoreModifiers the ScoreModifier values for all the spaces on the
+	 * board
+	 * @param GoToSpaceIndexes the GoToSpaceIndex values for all the spaces on
+	 * the board
+	 */
+	public GameBoard(String Player1Name, String Player2Name, String[] SpaceNames, int[] ScoreModifiers, int[] GoToSpaceIndexes)
+	{
+		// Draft: YOUR CODE
+		 Players = new HashMap<String, Player>();
+		 Spaces = new LinkedList<GameLocation>();
+		 Players.put(Player1Name, new Player(Player1Name));
+		 Players.put(Player2Name, new Player(Player2Name));
+		 for(int i = 0 ;i< SpaceNames.length; i++)
+		 Spaces.add( new GameLocation(SpaceNames[i], ScoreModifiers[i], GoToSpaceIndexes[i]));
+	}
+
+	/**
+	 * Return a player based on the player's name. Player names are the keys
+	 * into the Players HashMap. Objects of type Player are the values.
+	 * 
+	 * @param PlayerName the name of the player to be found
+	 * @return an object of type Player representing the player with the given name
+	 */
+	public Player GetPlayer(String PlayerName)
+	{
+		// Draft: YOUR CODE
+		return Players.get(PlayerName);
+	}
+	
+	/**
+	 * Return the GameLocation at a specific index.
+	 * @param Index the index of the target space
+	 * @return an object of type GameLocation
+	 */
+	public GameLocation GetSpace(int Index)
+	{
+		// Draft: YOUR CODE
+		// return a space at a given index
+		return Spaces.get(Index);
+	}
+
+	/**
+	 * Move the player with a given name a specific number of spaces.
+	 * @param PlayerName the player to move
+	 * @param MoveBy the number of spaces to move by
+	 * @return a message describing what happened to the player
+	 */
+	public String MovePlayer(String PlayerName, int MoveBy)
+	{
+		// Final: YOUR CODE
+		// move a player to a new space, return a message
+		if (MoveBy == 0) {
+			String temp = "";
+			
+			temp = GetMessage(PlayerName);
+			
+			while (GetSpace(GetPlayer(PlayerName).Position).GoToSpaceIndex != -1) {
+				GetPlayer(PlayerName).Position = GetSpace(GetPlayer(PlayerName).Position).GoToSpaceIndex;
+				GetPlayer(PlayerName).Score += GetSpace(GetPlayer(PlayerName).Position).ScoreModifier;
+				temp += GetMessage(PlayerName);
+			}
+			
+			return temp;
+		}
+		int currentPosition = GetPlayer(PlayerName).Position;
+		currentPosition++;
+		GetPlayer(PlayerName).Position = currentPosition % Spaces.size();
+		GetPlayer(PlayerName).Score += GetSpace(currentPosition).ScoreModifier;
+		
+		return MovePlayer( PlayerName , MoveBy - 1);
+	}
+
+	/**
+	 * Return a message for what happens to a player on their space. This method
+	 * should not modify the player, but simply inform the player of what
+	 * changes occurred.
+	 * 
+	 * Here are the valid messages:
+	 * "Added SCOREMODIFIER to the score for PLAYERNAME. "
+	 * "Moved player to SPACENAME. ";
+	 * 
+	 * Those messages need to appear for every space a player lands on.
+	 * 
+	 * @param PlayerName the player to whom the message applies
+	 * @return a String message
+	 */
+	public String GetMessage(String PlayerName)
+	{
+		// Final: YOUR CODE
+		// return a message saying how the player is modified at their current
+		// space
+		int score = GetSpace(GetPlayer(PlayerName).Position).ScoreModifier;
+	    String temp = "Added " + score + " to the score for " + PlayerName +  ". ";
+	    if (GetSpace(GetPlayer(PlayerName).Position).GoToSpaceIndex != -1) {
+	    	return temp += "Moved player to " + GetSpace(GetSpace(GetPlayer(PlayerName).Position).GoToSpaceIndex).Name +". ";
+	    }
+	    
+	    return temp;		
+	}
+
+	/**
+	 * Return a space with a given name, if one exists, or null
+	 * if it doesn't exist.
+	 * @param Name the name of the target space
+	 * @return a GameLocation or null
+	 */
+	public GameLocation FindSpace(String Name)// that is the name is being searched 
+	{
+		// Final: YOUR CODE
+		// use an iterator to find a given space
+		if(GetSpace(0).Name.equals(Name))
+		{
+			return GetSpace(0);
+		}
+		
+		ListIterator <GameLocation> G = Spaces.listIterator(0);
+		while(G.hasNext())
+		{
+			GameLocation currentLocation = G.next();
+			if(currentLocation.Name.equals(Name))
+			{
+				return currentLocation;
+			}
+		}
+		return null;
+	}
+
+
+
+}

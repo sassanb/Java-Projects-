@@ -1,0 +1,152 @@
+//FORBIDDEN java.util.Hash
+
+/**
+ * This class contains the methods for the 
+ * HashSet class. The HashSet class should
+ * be implemented as an array with a linked
+ * list at each slot in the array.
+ * 
+ * This file is simply a container
+ * for some static methods. You can write 
+ * these as the same as if they were in the
+ * class itself (using the given definitions).
+ * They were only separated out to prevent
+ * people from using JCF methods to implement
+ * them.
+ */
+public class HashSet_Methods
+{
+	/**
+	 * Add an item to the hash table. Data is the 
+	 * hash table. NewData is the Object to add to 
+	 * the table.
+	 * @param NewData the object to add to the table
+	 * @param Data the hash table
+	 */
+	public static void Add(Object NewData, Node[] Data)
+	{
+		// YOUR CODE HERE
+		int value = Math.abs(NewData.hashCode() % Data.length);// hashCode generates a unique integer for distinct objects. we use this hashCode and mod it by the length of the array to get a in bounds index into the array.
+		Node current = (Node) Data[value];
+		if (current == null) {
+			Data[value] = new Node(NewData, null);
+		} else {
+			while (current.Next != null)
+			{
+				current = current.Next;
+			}
+			current.Next = new Node(NewData, null);
+		}
+	}
+	
+	/**
+	 * Determine if the hash table in Data
+	 * contains the Object SearchData.
+	 * @param SearchData the item to be found
+	 * @param Data the haystack to search
+	 * @return true if the item is found. False otherwise
+	 */
+	public static boolean Contains(Object SearchData, Node[] Data)
+	{
+		// YOUR CODE HERE!
+		int value = Math.abs(SearchData.hashCode() % Data.length);
+		Node current = (Node) Data[value];
+		if (current == null) 
+			return false;
+		if(current.Data.equals(SearchData))
+			return true;
+		while (current.Next != null)// while loop may not execute if the condition is false 
+		{
+			current = current.Next;
+			if(current.Data.equals(SearchData))
+				return true;			
+		}
+		return false;
+		/*do// the do loop will go in one time at least and then it will check the condition.
+		{
+			if(current.Data.equals(SearchData))
+				return true;
+			current = current.Next;			
+		} while (current != null);
+		
+		return false;*/
+	}
+	
+	/**
+	 * If the given item is in the Data
+	 * @param RemoveData
+	 * @param Data
+	 */
+	public static void Remove(Object RemoveData, Node[] Data)
+	{
+		// YOUR CODE HERE!
+		for(int n = 0; n < Data.length; n++)
+		{
+			if (Data[n] != null) {
+				if (Data[n].Next != null) {
+					if (Data[n].Next.Data.equals(RemoveData)) {
+						Data[n].Next = Data[n].Next.Next;
+					}
+				}
+				else
+				{
+					if (Data[n].Data.equals(RemoveData)) {
+						Data[n] = null;
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Calculate the load on the hash table. In this case, the load
+	 * is the number of items in the hash table divided by the number
+	 * of slots in the array. This count includes items in linked lists.
+	 * 
+	 * @param Data the array to search
+	 * @return the calculated load
+	 */
+	public static double CalculateLoad(Node[] Data)
+	{
+		// YOUR CODE HERE!
+		double sum = 0.0;
+		for(Node n : Data)
+		{
+			if (n != null) {
+				sum++; // only counts the first node in each element
+				Node current = n;
+				while(current.Next != null)
+				{
+					sum++;
+					current = current.Next;
+				}
+			}
+		}
+		return sum/Data.length;
+	}
+	
+	/**
+	 * Create a new hash table that is twice the
+	 * size of the old one. Reallocate all elements 
+	 * to new positions in the new hash table.
+	 * @param Data the hash table to reallocate
+	 */
+	public static Node[] Resize(Node[] Data)
+	{
+		// YOUR CODE HERE!
+		Node [] temp = new Node[2*Data.length];
+		for(Node n : Data)
+		{
+			if (n != null) {
+				Add(n, temp); // only counts the first node in each element
+				Node current = n;
+				while(current.Next != null)
+				{
+					Add(current.Next, temp);
+					current = current.Next;
+				}
+			}
+		}
+		return temp;
+	}
+}

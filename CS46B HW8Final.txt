@@ -1,0 +1,201 @@
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.Random;
+
+/**
+ * This bot will help a calling program 
+ * solve a maze WITHOUT USING RECURSION!!! 
+ */
+public class Maze_Solver_Bot
+{
+	public Point StartPosition;
+	public Point EndPosition;
+	
+	private String[][] Maze;
+	
+	/**
+	 * Initialize the object. Set StartPosition to
+	 * the point in the Maze where S occurs. Set
+	 * EndPosition to the point in the Maze where E
+	 * occurs.
+	 * 
+	 * S = Start.
+	 * E = Exit.
+	 * 0 = Not Passable.
+	 * 1 = Passable.
+	 * 
+	 * @param NewMaze the maze to be solved
+	 */
+	public Maze_Solver_Bot(String[][] NewMaze)
+	{
+		// Draft: YOUR CODE HERE
+		Maze = NewMaze;
+		for( int i = 0 ; i < Maze.length; i++)
+		{
+			for(int j = 0 ; j < Maze[i].length; j++ )
+			{
+				if (Maze[i][j].equals("S"))
+				{
+					StartPosition = new Point(i , j);
+					
+				}
+				if( Maze[i][j].equals("E"))
+				{
+					EndPosition = new Point(i, j);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Return a new random move, which is either
+	 * (1, 0), (-1, 0), (0, 1), or (0, -1).
+	 * 
+	 * @return a Point containing one of four random moves
+	 */
+	public Point RandomMove()
+	{
+		// Draft: YOUR CODE HERE
+		Point a = new Point(1, 0);
+		Point b = new Point(-1, 0);
+		Point c = new Point(0, 1);
+		Point d = new Point(0, -1);
+		
+		ArrayList <Point> p = new ArrayList <Point>();
+		p.add(a);
+		p.add(b);
+		p.add(c);
+		p.add(d);
+		int random = new Random().nextInt(4);
+		return p.get(random);
+		//String[] strings = {"a", "b"};
+		/*Point[] p2 = {new Point(1, 0), new Point(-1, 0), new Point(0, 1), new Point(0, -1)};
+		 * Point[] p2 = new Point[4];
+		 * p2[0] = new Point(1, 0);..
+		return p2[new Random().nextInt(4)];*/
+	}
+	
+	/**
+	 * Get a queue filled with a number of randomized moves.
+	 * 
+	 * @return an object that implements the Queue interface filled with a series of random moves
+	 */
+	public Queue<Point> RandomMoves(int NumberOfMoves)
+	{
+		// Draft: YOUR CODE HERE
+		LinkedList<Point> q = new LinkedList<Point>();
+		for( int i = 0 ; i < NumberOfMoves; i++)
+		{
+			q.add(RandomMove());
+			
+		}
+		return q;
+	}
+	
+	/**
+	 * <p>
+	 * Calculate the Manhattan distance between
+	 * two points.
+	 * </p>
+	 * <p>
+	 * Manhattan distance is the sum of the difference between
+	 * each coordinat. So in this case, it's the difference between
+	 * X values plus the difference between Y values.
+	 * </p>
+	 * <p>
+	 * Manhattan Distance = AbsoluteValue(X1 - X2) + AbsoluteValue(Y1 - Y2)
+	 * </p>
+	 * @param A the first point
+	 * @param B the second point
+	 * @return the city-block distance between the two points
+	 */
+	public int ManhattanDistance(Point A, Point B)
+	{
+		// Draft: YOUR CODE HERE (1 line!)
+		return (int) (Math.abs(A.getX() - B.getX()) + Math.abs(A.getY() - B.getY()));
+	}
+	
+	/**
+	 * <p>
+	 * Tests if Moves is a valid series of position changes
+	 * that only hits passable points, or the start or end point. 
+	 * </p>
+	 * 
+	 * @param Moves the series of moves to test
+	 * @return true or false
+	 */
+	public boolean AllPositionsPassable(Queue<Point> Moves)
+	{
+		// Final: YOUR CODE HERE
+		Point currentPosition = new Point(StartPosition);
+		for( Point p : Moves)//for(int i = 0; i < Moves.size();i++)
+		{
+			currentPosition.translate((int)p.getX(), (int)p.getY());
+			if (currentPosition.getX() >= Maze.length || currentPosition.getY() >= Maze[0].length
+					|| currentPosition.getX() < 0 || currentPosition.getY() < 0)
+				return false;
+			if(Maze[(int) currentPosition.getX()][(int) currentPosition.getY()].equals("0"))
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * <p>
+	 * Tests if Moves is a series of position changes
+	 * that gets this bot from StartPosition to EndPosition. Moves will 
+	 * come in as (1, 0), (0, -1) ... etc. So it will
+	 * be a series of position changes, NOT a series of new
+	 * positions.
+	 * </p>
+	 * <p>
+	 * As long as the path goes through the end position, and
+	 * doesn't go through any unpassable positions, then the 
+	 * path is a valid solution.
+	 * </p>
+	 * 
+	 * @param Moves the series of moves to test
+	 * @return true or false
+	 */
+	public boolean IsValidSolution(Queue<Point> Moves)
+	{
+		// Final: YOUR CODE HERE
+		//Point currentPosition = new Point((int)StartPosition.getX(), (int)StartPosition.getY());
+		Point currentPosition = new Point(StartPosition);// creates a new object reference 
+		for(Point p : Moves)
+		{
+			currentPosition.translate((int)p.getX(), (int)p.getY());
+			if(Maze[(int) currentPosition.getX()][(int) currentPosition.getY()].equals("0"))
+			{
+				return false;
+			}
+			if(Maze[(int) currentPosition.getX()][(int) currentPosition.getY()].equals("E"))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * <p>
+	 * Starting at StartPosition, and adding all Moves, where
+	 * does the path end?
+	 * </p>
+	 * 
+	 * @param Moves the list of moves to make
+	 * @return the position at which the path ends
+	 */
+	public Point FinalPosition(Queue<Point> Moves)
+	{
+		// Final: YOUR CODE HERE
+		Point currentPosition = new Point(StartPosition);
+		for(Point p : Moves)
+		{
+			currentPosition.translate((int)p.getX(), (int)p.getY());
+		}
+		return currentPosition;
+	}
+}

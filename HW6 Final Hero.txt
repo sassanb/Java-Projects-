@@ -1,0 +1,257 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+
+public class Hero 
+{
+	private String Name;
+	
+	private int InventorySize;
+	public Pickup[] Inventory;
+	
+	/**
+	 * Hero constructor. Sets up the basic properties of our Hero.
+	 * 
+	 */
+	public Hero(String NewName, int NewInventorySize)
+	{
+		Name = NewName;
+		
+		InventorySize = NewInventorySize;
+		Inventory = new Pickup[InventorySize];
+	}
+	
+	// accessor and mutator methods for the Name property
+	public String GetName() { return Name; }
+	public void SetName(String NewName)	{ Name = NewName; }
+
+	/**
+	 * DRAFT: Return all Pickups beginning with the given String, and having
+	 * the given Size. Use linear search.
+	 * 
+	 * @param StartingWith the target prefix
+	 * @param Size the target Size
+	 * @return the list of Pickups found, or an empty ArrayList if none are found
+	 */
+	public ArrayList<Pickup> GetItems(String StartingWith, int Size)
+	{
+		ArrayList <Pickup> p = new ArrayList <Pickup>();
+		for(int i = 0; i < Inventory.length; i++)
+		{
+		    if(Inventory[i].GetSize() == Size && Inventory[i].GetName().startsWith(StartingWith))
+			{
+				p.add(Inventory[i]);
+				
+			}
+		}
+		// YOUR CODE HERE
+		return p;
+	}
+	
+	/**
+	 * DRAFT: Use java.util.Arrays and the Comparable
+	 * interface to sort the inventory. See Pickup.java
+	 * for details on the Comparable implementation.
+	 */
+	public void SortInventory()
+	{
+		// YOUR CODE HERE
+		Arrays.sort(Inventory);
+	}
+	
+	/**
+	 * DRAFT: Sort the inventory by size. Use selection
+	 * sort. Smaller items come first. 
+	 */
+	public void SortInventoryBySize()
+	{
+		// YOUR CODE HERE
+		// YOUR CODE HERE
+				for (int i = 0; i < Inventory.length; i++ )
+				{
+					int SmallestValue = Inventory[i].GetSize();
+					int SmallestValueIndex = i;
+					for	(int j = i; j < Inventory.length; j++ )
+					{
+						if (Inventory[j].GetSize() < SmallestValue) 
+						{
+							SmallestValue = Inventory[j].GetSize();
+							SmallestValueIndex = j;
+						}	
+					}
+					Pickup SmallerNumber = Inventory[i];// We use pickup since is the type of the inventory element
+					Inventory[i] = Inventory[SmallestValueIndex];
+					Inventory[SmallestValueIndex] = SmallerNumber;// swap
+				}
+	}
+	
+	
+	
+	/**
+	 * FINAL: Sort the inventory by the number of words
+	 * in the Name. Use the MergeSort method below and an 
+	 * inner class that implements the Comparator interface. 
+	 * The items with fewer spaces in their Name come first. 
+	 * The items with more spaces come next. You need only 
+	 * look for the space character, not for all whitespace characters.
+	 */
+	private static class inner implements Comparator<Pickup>// Pickup is the object 
+	{
+		
+		public int compare(Pickup p1, Pickup p2) 
+		{
+			Pickup f = (Pickup) p1;
+			Pickup s = (Pickup) p2;
+			
+			String[] w1 = f.GetName().trim().split(" ");
+			String[] w2 = s.GetName().trim().split(" ");
+
+			if(w1.length < w2.length)
+			{
+				return -1;
+			}
+			else if(w1.length > w2.length)
+			{
+				return 1;
+			}
+			else
+			{
+			    return 0;
+			}
+		}
+	
+}
+			
+
+	public void SortInventoryBySpaces()
+	{
+		// YOUR CODE HERE
+		inner in = new inner();
+		MergeSort(Inventory, in);
+	}
+	
+	/**
+	 * FINAL: Use merge sort to sort the Inventory by the number of spaces
+	 * in the Name property of a Pickup.
+	 * 
+	 * @param InputArray the array to sort
+	 * @param PickupComparator the Comparator you will use to compare items (REQUIRED)
+	 * @return the array sorted
+	 */
+	public static Pickup[] MergeSort(Pickup[] InputArray, Comparator<Pickup> PickupComparator)
+	{
+		// YOUR CODE HERE
+		if( InputArray.length <= 1 ) 
+		{
+		return InputArray;
+		}
+		else
+		{
+		// we Split the Array in half
+		int HalfSize = InputArray.length / 2;
+		Pickup[] Half1 = Arrays.copyOfRange(InputArray, 0, HalfSize);
+		Pickup[] Half2 = Arrays.copyOfRange(InputArray, HalfSize, InputArray.length);
+		// we Sort each half
+		Pickup[] Half1Sorted = MergeSort(Half1, PickupComparator);
+		Pickup[] Half2Sorted = MergeSort(Half2, PickupComparator);
+		// 3. Merge them back together
+		int i = 0;
+		int j = 0;
+		int k = 0;
+
+		while(i < InputArray.length)
+		{
+			if(j < Half1Sorted.length && k < Half2Sorted.length)
+			{
+				if(PickupComparator.compare(Half1Sorted[j], Half2Sorted[k]) == 1)
+				{
+					InputArray[i] = Half1Sorted[j];
+					j++;
+				}
+				else
+				{
+					InputArray[i] = Half2Sorted[k];
+					k++;
+				}
+				
+			}
+			else if(j < Half1Sorted.length)
+			{
+				InputArray[i] = Half1Sorted[j];
+				j++;
+			}
+			else if(k < Half2Sorted.length)
+			{
+				InputArray[i] = Half2Sorted[k];
+				k++;
+			}
+			
+			i++;
+		}
+		
+		return InputArray;
+		}
+	
+	}
+	
+	
+	
+
+	/**
+	 * FINAL: Return the first Pickup with the given Name. Use binary search.
+	 * 
+	 * @param StartingWith
+	 * @return the target Pickup if it exists, otherwise null
+	 */
+	public Pickup GetItem(String Name)
+	{
+		// YOUR CODE HERE
+		// sort inventory
+		
+		
+		int index = BinarySearch(Name, Inventory, 0, Inventory.length-1);
+		if(index != -1 && Inventory[index].GetName().startsWith(Name))
+		  return Inventory[index];
+		
+		else
+		return null;
+		
+	}
+	
+	
+	/**
+	 * FINAL: The BinarySearch method called by the GetItem method.
+	 * 
+	 * @param Value the value to search for
+	 * @param SortedArray the array in which to search
+	 * @param StartIndex the first index to search
+	 * @param EndIndex the last index to search
+	 * @return the index where the item occurs, or -1 if it is not in the array
+	 */
+	private static int BinarySearch(String Value, Pickup[] SortedArray, int StartIndex, int EndIndex)
+	{
+		// YOUR CODE HERE
+		
+		
+		    
+		   
+			if( StartIndex <= EndIndex )
+			{
+			int MiddleIndex = (StartIndex + EndIndex) / 2;
+			if(SortedArray[MiddleIndex].GetName() == Value)
+			return MiddleIndex;
+			else if( SortedArray[MiddleIndex].GetName().compareTo(Value) < 0)
+			return BinarySearch(Value, SortedArray, MiddleIndex + 1, EndIndex);
+			else
+			return BinarySearch(Value, SortedArray, StartIndex, MiddleIndex - 1);
+			}
+			else
+			{
+			return -1;
+			}
+		}
+}
+	
+	
+
+

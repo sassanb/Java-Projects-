@@ -1,0 +1,229 @@
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+/**
+ * This class is used to chart a path from one position
+ * on a map to another position. The map is a two dimensional
+ * array of integers, where 0 is an unpassable space, and 1
+ * is a passable space. The character can only move up, down,
+ * left and right. It cannot move diagonally.
+ * 
+ * @author Evan X. Merz
+ *
+ */
+public class Path_Finder
+{
+	/* 
+	 * DO NOT ADD MORE PROPERTIES TO THIS CLASS!
+	 * MAJOR POINTS WILL BE DEDUCTED FOR ADDING OTHER VARIABLES!
+	 */
+
+	// this ArrayList will contain the Path that is constructed recursively
+	ArrayList<Point> Path = null;
+	
+	/**
+	 * Empty constructor. It initializes the Path ArrayList. Do not modify this.
+	 */
+	public Path_Finder()
+	{
+		Path = new ArrayList<Point>();
+	}
+	
+	/**
+	 * Return the Path. Do not modify this.
+	 * 
+	 * @return the Path as an ArrayList of type Point
+	 */
+	public ArrayList<Point> GetPath()
+	{
+		return Path;
+	}
+	
+	/**
+	 * <p>
+	 * This method hides the recursive method from the user. It returns a boolean. If such a path exists, it returns true. If no such path exists, it returns false.
+	 * </p>
+	 * <p>
+	 * If such a path DOES exist, then it should be saved to the Path ArrayList.
+	 * </p>
+	 * <p>
+	 * Note that the StartPosition and EndPosition need not be valid positions. If they are invalid, such as less than 0, then it should return false.
+	 * </p>
+	 * <p>
+	 * Also note that Map should not be modified by this method or any subsequent methods.
+	 * </p>
+	 * 
+	 * @param StartPosition the initial position of the entity that needs to find a path
+	 * @param EndPosition the final position of the entity that needs to find a path
+	 * @param Map the two dimensional map to navigate. 0 is not passable, 1 is passable.
+	 * @return true if such a path exists, and false otherwise.
+	 */
+	public boolean FindPath(Point StartPosition, Point EndPosition, int[][] Map)
+	{
+		// YOUR CODE
+		// DRAFT: Make a copy of Map, by calling the method below. Always return false.
+		// FINAL: Call GetPath.
+		int [][] Map2 = CopyMap(Map);
+		Path = GetPath(StartPosition, EndPosition, Map2);
+		if(Path == null) 
+			return false;
+		return true;
+	}
+	
+	/**
+	 * <p>
+	 * This method calls itself recursively to find a path from CurrentPosition to EndPosition.
+	 * </p>
+	 * <p>
+	 * This method must do several things. Here are some questions to ask yourself when working it
+	 * out.
+	 * </p>
+	 * <p>
+	 * 1. How do we know if there is not a path to EndPosition that contains CurrentPosition?<br/>
+	 * 2. How do we avoid infinite recursion?<br/>
+	 * 3. What is the base case?<br/>
+	 * 4. How should this method call itself to make sure it checks every possible path?<br/>
+	 * </p>
+	 * <p>
+	 * WARNING: This method is very difficult to write. Do not put this off until the night before the 
+	 * assignment is due.
+	 * </p>
+	 * 
+	 * @param CurrentPosition the current position of the entity.
+	 * @param EndPosition the final position to navigate to.
+	 * @param Map the Map to traverse. 0 = blocked. 1 = not blocked.
+	 * @return an ArrayList of type Point containing the points in the path between the CurrentPosition and the EndPosition. If there is no path to EndPosition that contains CurrentPosition, then return null.  The positions should be in reverse order, from the destination point to the starting point.
+	 */
+	private ArrayList<Point> GetPath(Point CurrentPosition, Point EndPosition, int[][] Map)
+	{
+		// YOUR CODE
+		// FINAL: Complete this routine. This is worth 18 points.
+		
+		Point A = new Point((int) CurrentPosition.getX() - 1, (int) CurrentPosition.getY());
+		Point B = new Point((int) CurrentPosition.getX(), (int) CurrentPosition.getY() + 1);
+		Point C = new Point((int) CurrentPosition.getX() + 1, (int) CurrentPosition.getY());
+		Point D = new Point((int) CurrentPosition.getX(), (int) CurrentPosition.getY() - 1);
+		ArrayList <Point> a = null;
+		ArrayList <Point> b = null;
+		ArrayList <Point> c = null;
+		ArrayList <Point> d = null;
+		
+		
+		
+		
+		if(CurrentPosition.equals(EndPosition))// base case
+		{
+			ArrayList <Point> p = new ArrayList<Point>();
+			p.add(CurrentPosition);
+			return p;
+			
+		}
+		
+		if(A.getX() >= 0 && A.getY() >= 0 && A.getX() < Map.length && A.getY() < Map.length && Map[(int)A.getX()][(int)A.getY()] == 1)
+		{
+				Map[(int)CurrentPosition.getX()][(int)CurrentPosition.getY()] = 0;// so it won't go back to one since 0 will be the block sign 
+				a = GetPath(A, EndPosition, Map);// GetPath is the recursive method 
+				if(a!= null)
+					a.add(CurrentPosition);
+				Map[(int)CurrentPosition.getX()][(int)CurrentPosition.getY()] = 1;
+		}
+		if(B.getX() >= 0 && B.getY() >= 0 && B.getX() < Map.length && B.getY() < Map.length && Map[(int)B.getX()][(int)B.getY()] == 1)
+		{
+				Map[(int)CurrentPosition.getX()][(int)CurrentPosition.getY()] = 0;
+				b = GetPath(B, EndPosition, Map);
+			    if(b != null)
+			    	b.add(CurrentPosition);
+			    Map[(int)CurrentPosition.getX()][(int)CurrentPosition.getY()] = 1;
+		}
+		if(C.getX() >= 0 && C.getY() >= 0 && C.getX() < Map.length && C.getY() < Map.length && Map[(int)C.getX()][(int)C.getY()] == 1)
+		{
+			
+				Map[(int)CurrentPosition.getX()][(int)CurrentPosition.getY()] = 0;
+				c = GetPath(C, EndPosition, Map);
+				 if(c != null)
+					 c.add(CurrentPosition);
+				 Map[(int)CurrentPosition.getX()][(int)CurrentPosition.getY()] = 1;
+			
+		}
+		if(D.getX() >= 0 && D.getY() >= 0 && D.getX() < Map.length && D.getY() < Map.length && Map[(int)D.getX()][(int)D.getY()] == 1)
+		{
+		
+				Map[(int)CurrentPosition.getX()][(int)CurrentPosition.getY()] = 0;
+				d = GetPath(D, EndPosition, Map);
+				if(d!= null)
+				    d.add(CurrentPosition);
+				Map[(int)CurrentPosition.getX()][(int)CurrentPosition.getY()] = 1;
+			
+		}
+		return GetSmallestArrayList(a,b,c,d);// right method 
+	}
+	
+	/**
+	 * <p>
+	 * This method takes in an arbitrary number of ArrayLists as arguments. It returns the one with the smallest size.
+	 * </p>
+	 * <p>
+	 * Example Call: ArrayList<Point> NewPath = GetSmallest(PathUp, PathDown, PathLeft, PathRight);
+	 * </p>
+	 * <p>
+	 * This is public only for the draft.
+	 * </p>
+	 * 
+	 * @param Paths an array of the ArrayLists passed in as arguments. They should not be passed in as an array, rather the calling program should pass each as its own argument.
+	 * @return the smallest ArrayList
+	 */
+	@SafeVarargs
+	public static ArrayList<Point> GetSmallestArrayList(ArrayList<Point> ... Paths)
+	{
+		// YOUR CODE
+		/*
+		 *  DRAFT: Complete this method. Google varargs if you are confused about the
+		 *  argument. This is a method that can accept a variable number of arguments.
+		 *  I know we haven't covered this in class. This is one of those things that
+		 *  I expect you to teach yourself by doing it! Google is your friend!
+		 */
+		int min = 0;
+		for( int i = 0; i < Paths.length ; i++)
+		{
+			if((Paths[i] != null) && (Paths[min]== null))
+			{
+				min = i;
+			}
+	
+			else  if((Paths[i] != null) && (Paths[min] != null))
+			{
+				if(Paths[i].size() < Paths[min].size())
+				{
+					min = i;
+				}
+			}
+					
+		}
+		
+		return Paths[min];
+	}
+	
+
+
+		
+		
+
+		
+	
+
+	/**
+	 * Make a copy of a two-dimensional array of type int. This will be used to make sure that
+	 * the initial Map is not modified. This is public only for the draft.
+	 * 
+	 * @param Map the Map to copy
+	 * @return a copy of the values in the Map array. This should not simply return a new reference to the Map argument.
+	 */
+	public int[][] CopyMap(int[][] Map)
+	{
+		// YOUR CODE
+		// DRAFT: Make a copy of Map, and return it.
+		return Arrays.copyOf(Map, Map.length);
+		
+	}
+}

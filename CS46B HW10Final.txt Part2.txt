@@ -1,0 +1,77 @@
+import java.util.Scanner;
+
+public class StoryTree
+{
+	public StoryOption Root;
+	
+	public StoryTree(StoryOption NewRoot)
+	{
+		Root = NewRoot;
+	}
+	
+	/**
+	 * Play the text adventure game held
+	 * by the Root. Start at the Root node.
+	 * At each point in the game, show the
+	 * Story for that node, then all the
+	 * choices at that node. Allow the user to
+	 * indicate their choices by entering
+	 * a number between 0 and the number of
+	 * choices.
+	 */
+	public void Play()
+	{
+		// YOUR CODE HERE
+		StoryOption current = Root;
+		while(current.Count() >= 0)// current.Count is the number of children 
+		{
+			
+		
+		System.out.println(current.GetStory());
+		if(current.Count() == 0)
+		{
+		 break;
+		}
+		
+		
+
+			/*
+			 *  1. Print Choices labeled with their indexes
+			 *  starting at 0.
+			 */
+		    for(int i = 0 ; i < current.Count(); i++)
+		    {
+		    	System.out.println(i + ". " + current.GetChoice(i));// Root.GetChoice returns a element at the i index.
+		    }
+			
+			/*
+			 *  2. Ask for input from stdin. Show the
+			 *  prompt "Select an option: ". If the input
+			 *  is not a valid choice (0 - max)
+			 *  then print "Invalid choice. Select an option: "
+			 *  and repeat the process.
+			 */
+		    Scanner in = new Scanner(System.in);// system.in is used when you input from the user.
+		    System.out.print("Select an option: ");
+		    boolean flag = true;
+		    while(flag)
+		    {
+		    	int Number = -1;
+		    	if(in.hasNextInt()) {
+		    		Number = in.nextInt();
+		    	} else {
+		    		in.next();
+		    	}
+
+			    if( Number >= 0 && Number < current.Count())
+			    {
+			    	current = current.GetNext(Number);
+			    	flag = false;
+			    }
+			    else 
+			    	System.out.print("Invalid choice. Select an option: ");
+			}
+		}
+		    
+	}
+}
